@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' *; frame-src 'self' *; frame-ancestors 'self' *; connect-src 'self' *; script-src 'self' 'unsafe-inline' 'unsafe-eval' *; style-src 'self' 'unsafe-inline' *;">
+    <title>OmnIA - Gestión Q&A</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #2196F3;
+            color: white;
+        }
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+        .qa-form {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .qa-list {
+            background: white;
+        }
+        .qa-item {
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .qa-header {
+            background: #f8f9fa;
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .qa-content {
+            padding: 20px;
+        }
+        .question {
+            font-weight: bold;
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+        .answer {
+            color: #666;
+            line-height: 1.5;
+        }
+        .qa-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>❓ Gestión de Preguntas y Respuestas</h1>
+                <p>Base de conocimiento tipo Q&A - Entrada manual</p>
+            </div>
+            <a href="/" class="btn btn-secondary">← Volver al Chat</a>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="total-qa">0</div>
+                <div>Total Q&A</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="qa-today">0</div>
+                <div>Agregadas Hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="avg-length">0</div>
+                <div>Promedio Palabras</div>
+            </div>
+        </div>
+
+        <div class="qa-form">
+            <h3>➕ Agregar Nueva Pregunta y Respuesta</h3>
+            <form id="qa-form">
+                <div class="form-group">
+                    <label for="categoria">📚 Categoría/Materia:</label>
+                    <select id="categoria" class="form-control">
+                        <option value="general">General</option>
+                        <option value="58_Estadistica_y_probabilidad">58 - Estadística y Probabilidad</option>
+                        <option value="152_Introduccion_a_la_administracion_publica_C">152 - Introducción a la Administración Pública C</option>
+                        <option value="155_Principios_y_perspectivas_de_la_administracion_C">155 - Principios y Perspectivas de la Administración C</option>
+                        <option value="156_Sociologia_Rural_C">156 - Sociología Rural C</option>
+                        <option value="258_Criminologia_B">258 - Criminología B</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="pregunta">❓ Pregunta:</label>
+                    <textarea id="pregunta" class="form-control" placeholder="Escribe aquí la pregunta..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="respuesta">✅ Respuesta:</label>
+                    <textarea id="respuesta" class="form-control" placeholder="Escribe aquí la respuesta..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tags">🏷️ Etiquetas (separadas por comas):</label>
+                    <input type="text" id="tags" class="form-control" placeholder="ej: estadística, probabilidad, análisis">
+                </div>
+                
+                <button type="submit" class="btn btn-primary">💾 Guardar Q&A</button>
+                <button type="reset" class="btn btn-secondary">🔄 Limpiar</button>
+            </form>
+        </div>
+
+        <div class="qa-management">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>📋 Preguntas y Respuestas Existentes</h3>
+                <div>
+                    <button id="btn-export" class="btn btn-secondary">📤 Exportar</button>
+                    <button id="btn-import" class="btn btn-secondary">📥 Importar</button>
+                </div>
+            </div>
+            
+            <input type="text" id="search" class="search-box" placeholder="🔍 Buscar en preguntas y respuestas...">
+            
+            <div id="qa-list" class="qa-list">
+                <div class="empty-state">
+                    <p>No hay preguntas y respuestas agregadas aún.</p>
+                    <p>¡Agrega la primera usando el formulario de arriba!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos local (localStorage por ahora)
+        let qaDatabase = JSON.parse(localStorage.getItem('omnia_qa_database') || '[]');
+        
+        // Referencias DOM
+        const qaForm = document.getElementById('qa-form');
+        const qaList = document.getElementById('qa-list');
+        const searchInput = document.getElementById('search');
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStats();
+            renderQAList();
+        });
+        
+        // Manejar envío de formulario
+        qaForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newQA = {
+                id: Date.now(),
+                categoria: document.getElementById('categoria').value,
+                pregunta: document.getElementById('pregunta').value,
+                respuesta: document.getElementById('respuesta').value,
+                tags: document.getElementById('tags').value.split(',').map(tag => tag.trim()).filter(tag => tag),
+                fechaCreacion: new Date().toISOString(),
+                fechaModificacion: new Date().toISOString()
+            };
+            
+            qaDatabase.push(newQA);
+            saveDatabase();
+            
+            // Limpiar formulario
+            qaForm.reset();
+            
+            // Actualizar vista
+            updateStats();
+            renderQAList();
+            
+            alert('✅ Pregunta y respuesta guardada exitosamente!');
+        });
+        
+        // Búsqueda
+        searchInput.addEventListener('input', function() {
+            renderQAList(this.value);
+        });
+        
+        // Exportar datos
+        document.getElementById('btn-export').addEventListener('click', function() {
+            const dataStr = JSON.stringify(qaDatabase, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `omnia_qa_export_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        });
+        
+        // Importar datos
+        document.getElementById('btn-import').addEventListener('click', function() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (confirm('¿Importar datos? Esto agregará las Q&A al conjunto existente.')) {
+                            qaDatabase = qaDatabase.concat(importedData);
+                            saveDatabase();
+                            updateStats();
+                            renderQAList();
+                            alert('✅ Datos importados exitosamente!');
+                        }
+                    } catch (error) {
+                        alert('❌ Error al importar archivo: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        });
+        
+        // Funciones auxiliares
+        function saveDatabase() {
+            localStorage.setItem('omnia_qa_database', JSON.stringify(qaDatabase));
+        }
+        
+        function updateStats() {
+            const today = new Date().toISOString().split('T')[0];
+            const todayCount = qaDatabase.filter(qa => qa.fechaCreacion.startsWith(today)).length;
+            
+            const totalWords = qaDatabase.reduce((sum, qa) => {
+                return sum + qa.pregunta.split(' ').length + qa.respuesta.split(' ').length;
+            }, 0);
+            
+            document.getElementById('total-qa').textContent = qaDatabase.length;
+            document.getElementById('qa-today').textContent = todayCount;
+            document.getElementById('avg-length').textContent = qaDatabase.length ? Math.round(totalWords / qaDatabase.length) : 0;
+        }
+        
+        function renderQAList(searchTerm = '') {
+            let filteredQAs = qaDatabase;
+            
+            if (searchTerm) {
+                filteredQAs = qaDatabase.filter(qa => 
+                    qa.pregunta.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    qa.respuesta.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    qa.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+                );
+            }
+            
+            if (filteredQAs.length === 0) {
+                qaList.innerHTML = `
+                    <div class="empty-state">
+                        <p>${searchTerm ? 'No se encontraron resultados para: "' + searchTerm + '"' : 'No hay preguntas y respuestas agregadas aún.'}</p>
+                        <p>${searchTerm ? 'Intenta con otros términos de búsqueda.' : '¡Agrega la primera usando el formulario de arriba!'}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            qaList.innerHTML = filteredQAs.map(qa => `
+                <div class="qa-item">
+                    <div class="qa-header">
+                        <div>
+                            <span style="background: #2196F3; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                                ${qa.categoria}
+                            </span>
+                            <span style="color: #666; font-size: 12px; margin-left: 10px;">
+                                ID: ${qa.id} | ${new Date(qa.fechaCreacion).toLocaleDateString()}
+                            </span>
+                        </div>
+                        <div class="qa-actions">
+                            <button class="btn btn-secondary" onclick="editQA(${qa.id})" style="padding: 6px 12px; font-size: 12px;">✏️ Editar</button>
+                            <button class="btn btn-danger" onclick="deleteQA(${qa.id})" style="padding: 6px 12px; font-size: 12px;">🗑️ Eliminar</button>
+                        </div>
+                    </div>
+                    <div class="qa-content">
+                        <div class="question">❓ ${qa.pregunta}</div>
+                        <div class="answer">✅ ${qa.respuesta}</div>
+                        ${qa.tags.length > 0 ? `
+                            <div style="margin-top: 10px;">
+                                <strong>Etiquetas:</strong> 
+                                ${qa.tags.map(tag => `<span style="background: #f0f0f0; padding: 2px 6px; border-radius: 10px; font-size: 11px; margin-right: 5px;">${tag}</span>`).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Funciones globales para los botones
+        window.editQA = function(id) {
+            const qa = qaDatabase.find(item => item.id === id);
+            if (!qa) return;
+            
+            document.getElementById('categoria').value = qa.categoria;
+            document.getElementById('pregunta').value = qa.pregunta;
+            document.getElementById('respuesta').value = qa.respuesta;
+            document.getElementById('tags').value = qa.tags.join(', ');
+            
+            // Eliminar el original al editar
+            deleteQA(id, false);
+            
+            document.getElementById('pregunta').focus();
+        };
+        
+        window.deleteQA = function(id, confirm = true) {
+            if (confirm && !window.confirm('¿Estás seguro de eliminar esta Q&A?')) return;
+            
+            qaDatabase = qaDatabase.filter(item => item.id !== id);
+            saveDatabase();
+            updateStats();
+            renderQAList();
+            
+            if (confirm) alert('✅ Q&A eliminada exitosamente!');
+        };
+        
+        console.log('📝 Gestor Q&A iniciado - Base de datos:', qaDatabase.length, 'entradas');
+    </script>
+</body>
+</html>

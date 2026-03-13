@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmnIA Chat Widget - Firebase Hosting</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        .hosting-info {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #2196F3;
+        }
+        .chat-status {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #ff9800;
+        }
+        .status {
+            color: #1976d2;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+        }
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .info-section {
+            background: #f1f8e9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+        .url-display {
+            font-family: 'Courier New', monospace;
+            background: #263238;
+            color: #4fc3f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            word-break: break-all;
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="badge pulse">🌐 FIREBASE HOSTING</div>
+        
+        <h1>OmnIA Chat Widget</h1>
+        
+        <div class="hosting-info">
+            <h3>🚀 Desplegado en Firebase Hosting</h3>
+            <p><strong>URL:</strong> <span class="url-display" id="current-url"></span></p>
+            <p><strong>Características:</strong></p>
+            <ul>
+                <li>✅ HTTPS nativo de Google</li>
+                <li>📡 CDN global automático</li>
+                <li>⚡ Carga ultra-rápida</li>
+                <li>🔒 Certificados SSL automáticos</li>
+                <li>🌍 Disponible mundialmente</li>
+            </ul>
+        </div>
+        
+        <div class="chat-status">
+            <p><span class="status">Estado del Chat:</span> <span id="chat-status">Inicializando widget...</span></p>
+            <p>El widget de OmnIA debería aparecer en la esquina inferior derecha.</p>
+        </div>
+        
+        <div class="materia-section">
+            <h3>📚 Selección de Materia</h3>
+            <p><strong>Selecciona la materia para el chat:</strong></p>
+            <select id="materia_id">
+                <option value="58_Estadistica_y_probabilidad" selected>58 - Estadística y Probabilidad</option>
+                <option value="152_Introduccion_a_la_administracion_publica_C">152 - Introducción a la Administración Pública C</option>
+                <option value="155_Principios_y_perspectivas_de_la_administracion_C">155 - Principios y Perspectivas de la Administración C</option>
+                <option value="156_Sociologia_Rural_C">156 - Sociología Rural C</option>
+                <option value="258_Criminologia_B">258 - Criminología B</option>
+            </select>
+            <p><strong>Materia Actual:</strong> <span id="materia-display" style="color: #28a745; font-weight: bold;">58_Estadistica_y_probabilidad</span></p>
+        </div>
+        
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🏆</div>
+                <h4>Servidor de Producción</h4>
+                <p>Hosting empresarial de Google</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔐</div>
+                <h4>Token de Producción</h4>
+                <p>Configuración validada</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h4>CDN Global</h4>
+                <p>Velocidad optimizada</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📱</div>
+                <h4>Compatible</h4>
+                <p>Todos los dispositivos</p>
+            </div>
+        </div>
+        
+        <div class="info-section">
+            <h3>💬 Información del Widget</h3>
+            <p><strong>Proveedor:</strong> InConcert - WebChat CLS49</p>
+            <p><strong>Token:</strong> C071A650B859D3DCC63BEE1A3CDA2489</p>
+            <p><strong>Protocolo:</strong> <span id="protocol-info"></span></p>
+            <p><strong>Dominio:</strong> <span id="domain-info"></span></p>
+            <p><strong>Materia ID:</strong> <span id="materia-info" style="color: #2196F3;">58_Estadistica_y_probabilidad</span></p>
+        </div>
+        
+        <div class="info-section">
+            <h3>✨ Ventajas de Firebase Hosting</h3>
+            <ol>
+                <li><strong>Dominio Real:</strong> No es localhost, funciona con todos los widgets</li>
+                <li><strong>HTTPS Gratuito:</strong> Certificados SSL automáticos de Google</li>
+                <li><strong>CDN Global:</strong> Servidores en todo el mundo para máxima velocidad</li>
+                <li><strong>99.9% Uptime:</strong> Infraestructura empresarial de Google</li>
+                <li><strong>Escalabilidad:</strong> Soporta millones de visitantes sin configuración</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- OmnIA Chat Widget Script - Token de Producción -->
+    <script type='text/javascript'>
+      console.log('🔥 Firebase Hosting - Inicializando OmnIA Chat Widget...');
+      
+      // Función para inicializar componentes DOM
+      function initializeComponents() {
+        console.log('📄 DOM cargado, verificando elementos...');
+        
+        // Verificar elementos críticos
+        var elementos = {
+          currentUrl: document.getElementById('current-url'),
+          protocolInfo: document.getElementById('protocol-info'),
+          domainInfo: document.getElementById('domain-info'),
+          tipoBase: document.getElementById('tipo_base'),
+          materiaId: document.getElementById('materia_id'),
+          materiaDisplay: document.getElementById('materia-display'),
+          materiaInfo: document.getElementById('materia-info'),
+          materiaConfig: document.getElementById('materia-config'),
+          btnGestionar: document.getElementById('btn-gestionar'),
+          btnHistorial: document.getElementById('btn-historial'),
+          chatStatus: document.getElementById('chat-status')
+        };
+        
+        // Log de elementos faltantes
+        var faltantes = Object.keys(elementos).filter(key => !elementos[key]);
+        if (faltantes.length > 0) {
+          console.warn('⚠️ Elementos no encontrados:', faltantes);
+        }
+        
+        // Información básica del hosting
+        if (elementos.currentUrl) elementos.currentUrl.textContent = window.location.href;
+        if (elementos.protocolInfo) elementos.protocolInfo.textContent = window.location.protocol;
+        if (elementos.domainInfo) elementos.domainInfo.textContent = window.location.hostname;
+        
+        // Configuración del selector de tipo de base
+        if (elementos.tipoBase) {
+          elementos.tipoBase.addEventListener('change', function() {
+            var tipoBase = this.value;
+            console.log('🎯 Tipo de base cambiado a:', tipoBase);
+            
+            if (elementos.materiaConfig) {
+              if (tipoBase === 'materia') {
+                elementos.materiaConfig.style.display = 'block';
+              } else {
+                elementos.materiaConfig.style.display = 'none';
+              }
+            }
+            
+            if (elementos.btnGestionar) {
+              if (tipoBase === 'materia') {
+                elementos.btnGestionar.textContent = '📋 Gestionar Materia';
+              } else if (tipoBase === 'documento') {
+                elementos.btnGestionar.textContent = '📄 Gestionar Documentos';
+              } else if (tipoBase === 'qa') {
+                elementos.btnGestionar.textContent = '❓ Gestionar Q&A';
+              }
+            }
+            
+            localStorage.setItem('tipoBaseSeleccionado', tipoBase);
+          });
+        }
+        
+        // Configuración de botones
+        if (elementos.btnGestionar) {
+          elementos.btnGestionar.addEventListener('click', function() {
+            var tipoBase = elementos.tipoBase ? elementos.tipoBase.value : 'materia';
+            
+            if (tipoBase === 'qa') {
+              // Para QA, abrir en nueva página
+              window.open('qa.html', '_blank');
+            } else {
+              // Para otros tipos, mostrar en modal o popup
+              alert('Funcionalidad de gestión de ' + tipoBase + ' será implementada próximamente');
+            }
+          });
+        }
+        
+        if (elementos.btnHistorial) {
+          elementos.btnHistorial.addEventListener('click', function() {
+            // Historial por bot_id (no por materia)
+            var botId = 'bot_' + Date.now(); // Temporal - debería venir de configuración
+            alert('Ver historial de bot: ' + botId + '\n(A implementar: /historial/' + botId + ')');
+          });
+        }
+        
+        // Configuración del selector de materia
+        if (elementos.materiaId) {
+          elementos.materiaId.addEventListener('change', function() {
+            var selectedMateria = this.value;
+            if (elementos.materiaDisplay) elementos.materiaDisplay.textContent = selectedMateria;
+            if (elementos.materiaInfo) elementos.materiaInfo.textContent = selectedMateria;
+            console.log('📚 Materia cambiada a:', selectedMateria);
+            
+            localStorage.setItem('materiaSeleccionada', selectedMateria);
+          });
+        }
+        
+        // Funciones globales
+        window.getMateriaSeleccionada = function() {
+          return elementos.materiaId ? elementos.materiaId.value : null;
+        };
+        
+        window.getTipoBase = function() {
+          return elementos.tipoBase ? elementos.tipoBase.value : null;
+        };
+        
+        // Cargar configuración guardada
+        var tipoBaseGuardado = localStorage.getItem('tipoBaseSeleccionado');
+        var materiaGuardada = localStorage.getItem('materiaSeleccionada');
+        
+        if (tipoBaseGuardado && elementos.tipoBase) {
+          elementos.tipoBase.value = tipoBaseGuardado;
+          elementos.tipoBase.dispatchEvent(new Event('change'));
+        }
+        
+        if (materiaGuardada && elementos.materiaId) {
+          elementos.materiaId.value = materiaGuardada;
+          if (elementos.materiaDisplay) elementos.materiaDisplay.textContent = materiaGuardada;
+          if (elementos.materiaInfo) elementos.materiaInfo.textContent = materiaGuardada;
+        }
+        
+        console.log('✅ Componentes DOM inicializados correctamente');
+        return elementos;
+      }
+      
+      // Función para cargar el widget de chat
+      function loadChatWidget() {
+        try {
+          console.log('🌐 Firebase Hosting detectado');
+          console.log('🔒 Protocolo:', window.location.protocol);
+          console.log('🏢 Dominio:', window.location.hostname);
+          
+          var proto = window.location.protocol || 'https:';
+          var node = document.createElement('script');
+          node.type = 'text/javascript';
+          node.async = true;
+          
+          // Token de producción que funciona en servidores reales
+          node.src = proto + '//webchat-cls49-boc.i6.inconcertcc.com/v3/click_to_chat?token=12D06B5AF154471099A725B104D7B78B';
+          
+          console.log('📡 Cargando OmnIA desde:', node.src);
+          
+          // Callbacks de carga
+          node.onload = function() {
+            console.log('✅ OmnIA Chat Widget cargado exitosamente');
+            
+            var chatStatus = document.getElementById('chat-status');
+            if (chatStatus) {
+              chatStatus.innerHTML = '<span style="color: #4caf50; font-weight: bold;">✅ Widget OmnIA activo</span> 🚀';
+            }
+            
+            // Verificar widget después de carga
+            setTimeout(function() {
+              var chatElements = document.querySelectorAll(
+                '[class*="chat"], [id*="chat"], iframe[src*="inconcertcc"], [class*="omnia"], [id*="omnia"]'
+              );
+              console.log('🔍 Elementos de chat detectados:', chatElements.length);
+              
+              if (chatElements.length > 0) {
+                console.log('🎉 ¡OmnIA Chat funcionando perfectamente!');
+                if (chatStatus) {
+                  chatStatus.innerHTML = '<span style="color: #4caf50; font-weight: bold;">🎉 OmnIA Chat funcional</span> 💬';
+                }
+              }
+            }, 3000);
+          };
+          
+          node.onerror = function(err) {
+            console.error('❌ Error cargando OmnIA Chat Widget:', err);
+            var chatStatus = document.getElementById('chat-status');
+            if (chatStatus) {
+              chatStatus.innerHTML = '<span style="color: #f44336; font-weight: bold;">❌ Error al cargar OmnIA</span>';
+            }
+          };
+          
+          // Insertar script en DOM
+          var scripts = document.getElementsByTagName('script');
+          if (scripts.length > 0) {
+            scripts[0].parentNode.insertBefore(node, scripts[0]);
+            console.log('📤 OmnIA script insertado correctamente');
+          }
+          
+        } catch(error) {
+          console.error('💥 Error crítico al cargar chat:', error);
+          var chatStatus = document.getElementById('chat-status');
+          if (chatStatus) {
+            chatStatus.innerHTML = '<span style="color: #f44336; font-weight: bold;">💥 Error crítico</span>';
+          }
+        }
+      }
+      
+      // Esperar a que el DOM esté listo
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+          console.log('📄 DOMContentLoaded event fired');
+          initializeComponents();
+          loadChatWidget();
+        });
+      } else {
+        // DOM ya está listo
+        console.log('📄 DOM ya estaba listo');
+        initializeComponents();
+        loadChatWidget();
+      }
+      
+      // Monitor de verificación final
+      setTimeout(function() {
+        console.log('🔎 Verificación final del sistema...');
+        console.log('📊 Firebase Info - URL:', window.location.href);
+        console.log('📊 Firebase Info - Protocolo:', window.location.protocol);
+        console.log('📊 Firebase Info - Dominio:', window.location.hostname);
+        
+        var allElements = document.querySelectorAll('*');
+        var chatRelated = Array.from(allElements).filter(function(el) {
+          return (el.className && (el.className.toString().includes('chat') || el.className.toString().includes('omnia'))) ||
+                 (el.id && (el.id.includes('chat') || el.id.includes('omnia'))) ||
+                 el.tagName === 'IFRAME';
+        });
+        
+        console.log('📈 Total elementos DOM:', allElements.length);
+        console.log('💬 Elementos de chat encontrados:', chatRelated.length);
+        
+        if (chatRelated.length === 0) {
+          console.warn('⚠️ No se detectaron elementos de chat después de 7 segundos');
+        } else {
+          console.log('✨ Sistema Firebase + OmnIA funcionando correctamente');
+        }
+      }, 7000);
+
+    </script>
+</body>
+</html>

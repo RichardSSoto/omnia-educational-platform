@@ -300,6 +300,30 @@
                                 statusElement.className = 'status-box status-success';
                             }
                         }, 1000);
+                        
+                        // Verificar si el widget realmente se cargó después de 4 segundos
+                        setTimeout(function() {
+                            var chatIframes = document.querySelectorAll('iframe[src*="inconcertcc"]');
+                            var chatContainers = document.querySelectorAll('[id*="webchat"], [class*="webchat"]');
+                            
+                            console.log('🔍 Verificando carga real del widget...');
+                            console.log('Iframes de chat encontrados:', chatIframes.length);
+                            console.log('Contenedores de chat encontrados:', chatContainers.length);
+                            
+                            if (chatIframes.length === 0 && chatContainers.length === 0) {
+                                console.warn('⚠️ Widget no se cargó - CSP bloqueando iframe. Activando plan alternativo...');
+                                var statusElement = document.getElementById('chat-status');
+                                if (statusElement) {
+                                    statusElement.innerHTML = '⚠️ <strong>CSP detectado</strong> - <a href="./chat.html" target="_blank" style="color: #007bff; text-decoration: underline;">Abrir Chat Funcional</a> 🚀';
+                                    statusElement.className = 'status-box status-warning';
+                                }
+                                
+                                // Crear botón de acceso rápido al chat
+                                createChatAccessButton();
+                            } else {
+                                console.log('🎉 ¡Chat widget detectado y funcionando correctamente!');
+                            }
+                        }, 4000);
                     };
                     
                     node.onerror = function() {
@@ -307,9 +331,10 @@
                         setTimeout(function() {
                             var statusElement = document.getElementById('chat-status');
                             if (statusElement) {
-                                statusElement.innerHTML = '❌ <strong>Error al cargar chat widget</strong> - Verificar conexión ⚠️';
+                                statusElement.innerHTML = '❌ <strong>Error de carga</strong> - <a href="./chat.html" target="_blank" style="color: #007bff; text-decoration: underline;">Usar Chat Alternativo</a> 🔗';
                                 statusElement.className = 'status-box status-warning';
                             }
+                            createChatAccessButton();
                         }, 1000);
                     };
                     
@@ -318,20 +343,65 @@
                     
                 } catch(e) {
                     console.error('Error inicializando chat widget:', e);
+                    createChatAccessButton();
                 }
             })();
+        }
+        
+        function createChatAccessButton() {
+            // Crear botón flotante para acceder al chat
+            var existingButton = document.getElementById('floating-chat-btn');
+            if (existingButton) return; // No crear duplicados
             
-            // Debug adicional
-            setTimeout(function() {
-                console.log('Verificando elementos de chat en la página...');
-                var chatElements = document.querySelectorAll('[class*="chat"], [id*="chat"], iframe');
-                console.log('Elementos relacionados con chat encontrados:', chatElements.length);
-                if (chatElements.length === 0) {
-                    console.warn('No se encontraron elementos de chat. El widget podría no haberse cargado correctamente.');
-                } else {
-                    console.log('🎉 ¡Chat widget detectado y funcionando en la página principal!');
+            var button = document.createElement('button');
+            button.id = 'floating-chat-btn';
+            button.innerHTML = '💬 Chat OmnIA';
+            button.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                right: 30px;
+                background: linear-gradient(135deg, #007bff, #0056b3);
+                color: white;
+                border: none;
+                padding: 15px 25px;
+                border-radius: 50px;
+                cursor: pointer;
+                font-weight: bold;
+                font-size: 16px;
+                box-shadow: 0 4px 20px rgba(0,123,255,0.3);
+                z-index: 1000;
+                transition: all 0.3s ease;
+                animation: pulse 2s infinite;
+            `;
+            
+            button.onmouseover = function() {
+                this.style.transform = 'scale(1.1)';
+                this.style.boxShadow = '0 6px 25px rgba(0,123,255,0.4)';
+            };
+            
+            button.onmouseout = function() {
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = '0 4px 20px rgba(0,123,255,0.3)';
+            };
+            
+            button.onclick = function() {
+                window.open('./chat.html', '_blank');
+            };
+            
+            document.body.appendChild(button);
+            
+            // Agregar animación CSS
+            var style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
                 }
-            }, 5000);
+            `;
+            document.head.appendChild(style);
+            
+            console.log('🔘 Botón de chat flotante creado como alternativa');
         }
         
         function setupEventListeners() {

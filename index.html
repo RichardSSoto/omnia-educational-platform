@@ -405,8 +405,8 @@
             content.innerHTML = `
                 <h3 style="margin-bottom: 20px; color: #333;">💬 Chat OmnIA</h3>
                 <p style="margin-bottom: 30px; color: #666; line-height: 1.5;">
-                    Debido a las restricciones de seguridad de GitHub Pages,<br>
-                    el chat se abrirá en una nueva ventana.
+                    El chat se abrirá en una interfaz optimizada<br>
+                    especialmente diseñada para OmnIA.
                 </p>
                 
                 <div style="margin-bottom: 25px;">
@@ -422,7 +422,7 @@
                         font-size: 16px;
                         transition: all 0.3s ease;
                     " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                        🚀 Ventana Flotante
+                        🚀 Ventana Popup
                     </button>
                     
                     <button onclick="openChatWindow('tab')" style="
@@ -437,7 +437,7 @@
                         font-size: 16px;
                         transition: all 0.3s ease;
                     " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                        🌐 Nueva Pestaña
+                        🌐 Pestaña Completa
                     </button>
                 </div>
                 
@@ -473,10 +473,10 @@
             
             // Funciones para el modal
             window.openChatWindow = function(type) {
-                var chatUrl = 'https://webchat-cls49-boc.i6.inconcertcc.com/v3/click_to_chat?token=C071A650B859D3DCC63BEE1A3CDA2489';
+                var chatUrl = './chat.html'; // Nueva página dedicada para chat
                 
                 if (type === 'popup') {
-                    window.open(chatUrl, 'OmnIAChat', 'width=450,height=650,scrollbars=yes,resizable=yes,location=no,menubar=no,toolbar=no');
+                    window.open(chatUrl, 'OmnIAChat', 'width=500,height=700,scrollbars=yes,resizable=yes,location=no,menubar=no,toolbar=no');
                 } else {
                     window.open(chatUrl, '_blank');
                 }

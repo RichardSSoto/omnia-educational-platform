@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OmnIA Chat Widget</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .chat-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .header {
+            margin-bottom: 25px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        
+        .status-loading {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid #007bff;
+        }
+        
+        .info h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+        
+        .info p {
+            color: #495057;
+            line-height: 1.5;
+            margin: 0;
+        }
+        
+        .retry-btn {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .retry-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,123,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">
+            <h1>💬 OmnIA Chat</h1>
+            <p>Asistente inteligente educativo</p>
+        </div>
+        
+        <div id="chat-status" class="status status-loading">
+            🔄 Inicializando chat...
+        </div>
+        
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+        </div>
+        
+        <div class="info">
+            <h3>ℹ️ Información del Chat</h3>
+            <p>Este chat utiliza la tecnología InConcert para proporcionar asistencia educativa inteligente sobre las materias configuradas en OmnIA.</p>
+        </div>
+        
+        <button id="retry-btn" class="retry-btn" style="display: none;" onclick="reloadChat()">
+            🔄 Reintentar Conexión
+        </button>
+        
+        <div id="chat-widget-container"></div>
+    </div>
+
+    <script>
+        console.log('💬 Inicializando OmnIA Chat Widget...');
+        
+        var chatStatus = document.getElementById('chat-status');
+        var loading = document.getElementById('loading');
+        var retryBtn = document.getElementById('retry-btn');
+        var container = document.getElementById('chat-widget-container');
+        
+        function updateStatus(message, type) {
+            chatStatus.textContent = message;
+            chatStatus.className = 'status status-' + type;
+        }
+        
+        function showRetryButton() {
+            loading.style.display = 'none';
+            retryBtn.style.display = 'block';
+        }
+        
+        function hideRetryButton() {
+            loading.style.display = 'flex';
+            retryBtn.style.display = 'none';
+        }
+        
+        function loadChatWidget() {
+            try {
+                console.log('🌐 Cargando widget de InConcert...');
+                updateStatus('🔄 Conectando con InConcert...', 'loading');
+                
+                // Limpiar container
+                container.innerHTML = '';
+                
+                // Crear script del widget
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.async = true;
+                script.src = 'https://webchat-cls49-boc.i6.inconcertcc.com/v3/click_to_chat?token=C071A650B859D3DCC63BEE1A3CDA2489';
+                
+                // Eventos del script
+                script.onload = function() {
+                    console.log('✅ Script de InConcert cargado');
+                    updateStatus('✅ Chat conectado y listo', 'success');
+                    loading.style.display = 'none';
+                    
+                    // Verificar si el widget apareció
+                    setTimeout(function() {
+                        checkChatWidget();
+                    }, 3000);
+                };
+                
+                script.onerror = function(error) {
+                    console.error('❌ Error al cargar script:', error);
+                    updateStatus('❌ Error de conexión con InConcert', 'error');
+                    showRetryButton();
+                };
+                
+                // Agregar script al head
+                document.head.appendChild(script);
+                
+                console.log('📤 Script agregado al DOM');
+                
+            } catch (error) {
+                console.error('💥 Error crítico:', error);
+                updateStatus('💥 Error crítico: ' + error.message, 'error');
+                showRetryButton();
+            }
+        }
+        
+        function checkChatWidget() {
+            // Buscar elementos del widget
+            var chatElements = document.querySelectorAll([
+                '[class*="chat"]',
+                '[id*="chat"]', 
+                '[class*="widget"]',
+                '[id*="widget"]',
+                'iframe',
+                '[class*="inconcert"]',
+                '[id*="inconcert"]'
+            ].join(', '));
+            
+            console.log('🔍 Elementos de chat detectados:', chatElements.length);
+            
+            if (chatElements.length > 0) {
+                console.log('🎉 Widget de chat detectado y funcionando');
+                updateStatus('🎉 Chat activo y funcionando', 'success');
+                
+                // Ocultar información extra cuando el chat esté activo
+                setTimeout(function() {
+                    document.querySelector('.info').style.display = 'none';
+                }, 2000);
+                
+            } else {
+                console.warn('⚠️ Widget no detectado después de 3 segundos');
+                updateStatus('⚠️ Widget no visible - Intentando reconectar...', 'error');
+                
+                // Reintentar una vez más
+                setTimeout(function() {
+                    var allElements = document.querySelectorAll('*');
+                    console.log('📊 Total elementos DOM:', allElements.length);
+                    
+                    if (allElements.length < 50) {
+                        console.log('🔄 Reintentando carga del widget...');
+                        reloadChat();
+                    } else {
+                        showRetryButton();
+                    }
+                }, 2000);
+            }
+        }
+        
+        function reloadChat() {
+            console.log('🔄 Recargando chat widget...');
+            hideRetryButton();
+            updateStatus('🔄 Reintentando conexión...', 'loading');
+            
+            // Limpiar scripts anteriores
+            var oldScripts = document.querySelectorAll('script[src*="inconcertcc"]');
+            oldScripts.forEach(function(script) {
+                if (script.parentNode) {
+                    script.parentNode.removeChild(script);
+                }
+            });
+            
+            // Esperar un poco y recargar
+            setTimeout(loadChatWidget, 1000);
+        }
+        
+        // Función global para reintentar
+        window.reloadChat = reloadChat;
+        
+        // Iniciar carga del widget cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('📄 DOM cargado, inicializando chat...');
+                setTimeout(loadChatWidget, 500);
+            });
+        } else {
+            console.log('📄 DOM ya listo, inicializando chat...');
+            setTimeout(loadChatWidget, 500);
+        }
+        
+        // Información de debug
+        setTimeout(function() {
+            console.log('🔍 Debug Info:');
+            console.log('  - URL:', window.location.href);
+            console.log('  - UserAgent:', navigator.userAgent);
+            console.log('  - Referrer:', document.referrer);
+        }, 2000);
+    </script>
+</body>
+</html>
